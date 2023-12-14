@@ -42,8 +42,6 @@
 /home/chanette/RiderProjects/WebApplication2/obj/Debug/net8.0/WebApplication2.csproj.CoreCompileInputs.cache
 /home/chanette/RiderProjects/WebApplication2/obj/Debug/net8.0/WebApplication2.MvcApplicationPartsAssemblyInfo.cs
 /home/chanette/RiderProjects/WebApplication2/obj/Debug/net8.0/WebApplication2.MvcApplicationPartsAssemblyInfo.cache
-/home/chanette/RiderProjects/WebApplication2/obj/Debug/net8.0/WebApplication2.RazorAssemblyInfo.cache
-/home/chanette/RiderProjects/WebApplication2/obj/Debug/net8.0/WebApplication2.RazorAssemblyInfo.cs
 /home/chanette/RiderProjects/WebApplication2/obj/Debug/net8.0/staticwebassets.build.json
 /home/chanette/RiderProjects/WebApplication2/obj/Debug/net8.0/staticwebassets.development.json
 /home/chanette/RiderProjects/WebApplication2/obj/Debug/net8.0/staticwebassets/msbuild.WebApplication2.Microsoft.AspNetCore.StaticWebAssets.props
@@ -51,12 +49,14 @@
 /home/chanette/RiderProjects/WebApplication2/obj/Debug/net8.0/staticwebassets/msbuild.buildMultiTargeting.WebApplication2.props
 /home/chanette/RiderProjects/WebApplication2/obj/Debug/net8.0/staticwebassets/msbuild.buildTransitive.WebApplication2.props
 /home/chanette/RiderProjects/WebApplication2/obj/Debug/net8.0/staticwebassets.pack.json
-/home/chanette/RiderProjects/WebApplication2/obj/Debug/net8.0/scopedcss/Views/Shared/_Layout.cshtml.rz.scp.css
 /home/chanette/RiderProjects/WebApplication2/obj/Debug/net8.0/scopedcss/bundle/WebApplication2.styles.css
-/home/chanette/RiderProjects/WebApplication2/obj/Debug/net8.0/scopedcss/projectbundle/WebApplication2.bundle.scp.css
 /home/chanette/RiderProjects/WebApplication2/obj/Debug/net8.0/WebApplication2.csproj.CopyComplete
 /home/chanette/RiderProjects/WebApplication2/obj/Debug/net8.0/WebApplication2.dll
 /home/chanette/RiderProjects/WebApplication2/obj/Debug/net8.0/refint/WebApplication2.dll
 /home/chanette/RiderProjects/WebApplication2/obj/Debug/net8.0/WebApplication2.pdb
 /home/chanette/RiderProjects/WebApplication2/obj/Debug/net8.0/WebApplication2.genruntimeconfig.cache
 /home/chanette/RiderProjects/WebApplication2/obj/Debug/net8.0/ref/WebApplication2.dll
+/home/chanette/RiderProjects/WebApplication2/bin/Debug/net8.0/Microsoft.EntityFrameworkCore.Relational.dll
+/home/chanette/RiderProjects/WebApplication2/bin/Debug/net8.0/MySqlConnector.dll
+/home/chanette/RiderProjects/WebApplication2/bin/Debug/net8.0/Pomelo.EntityFrameworkCore.MySql.dll
+/home/chanette/RiderProjects/WebApplication2/obj/Debug/net8.0/WebApplication2.sourcelink.json

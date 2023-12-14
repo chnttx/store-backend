@@ -1,7 +1,9 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace WebApplication2.Models;
 
+[Table("Orders")]
 public class Order
 {
     public int OrderId { get; set; }

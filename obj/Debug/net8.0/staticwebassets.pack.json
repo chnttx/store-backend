@@ -1,10 +1,6 @@
 {
   "Files": [
     {
-      "Id": "/home/chanette/RiderProjects/WebApplication2/obj/Debug/net8.0/scopedcss/projectbundle/WebApplication2.bundle.scp.css",
-      "PackagePath": "staticwebassets/WebApplication2.bundle.scp.css"
-    },
-    {
       "Id": "/home/chanette/RiderProjects/WebApplication2/wwwroot/css/site.css",
       "PackagePath": "staticwebassets/css/site.css"
     },

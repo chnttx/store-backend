@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "JYGe1Z53S1dqa6SrQ2YqoHRUL748NNPTGTE8rsXuA6ADgGq/KWThG78plXFp/W2SXX5Q/QNJ1Imeqxgpt1qoLw==",
+  "dgSpecHash": "brP75LR/pYTXTEnwEgQUCT0D1rzTpt5hRI3Qt6FO1dV5gZurcfuoQZcDUdnjXd6JtbtTnAuAnzQn7oDg40f4YA==",
   "success": true,
   "projectFilePath": "/home/chanette/RiderProjects/WebApplication2/WebApplication2.csproj",
   "expectedPackageFiles": [
@@ -12,9 +12,11 @@
     "/home/chanette/.nuget/packages/microsoft.entityframeworkcore/8.0.0/microsoft.entityframeworkcore.8.0.0.nupkg.sha512",
     "/home/chanette/.nuget/packages/microsoft.entityframeworkcore.abstractions/8.0.0/microsoft.entityframeworkcore.abstractions.8.0.0.nupkg.sha512",
     "/home/chanette/.nuget/packages/microsoft.entityframeworkcore.analyzers/8.0.0/microsoft.entityframeworkcore.analyzers.8.0.0.nupkg.sha512",
+    "/home/chanette/.nuget/packages/microsoft.entityframeworkcore.relational/8.0.0/microsoft.entityframeworkcore.relational.8.0.0.nupkg.sha512",
     "/home/chanette/.nuget/packages/microsoft.extensions.apidescription.server/6.0.5/microsoft.extensions.apidescription.server.6.0.5.nupkg.sha512",
     "/home/chanette/.nuget/packages/microsoft.extensions.caching.abstractions/8.0.0/microsoft.extensions.caching.abstractions.8.0.0.nupkg.sha512",
     "/home/chanette/.nuget/packages/microsoft.extensions.caching.memory/8.0.0/microsoft.extensions.caching.memory.8.0.0.nupkg.sha512",
+    "/home/chanette/.nuget/packages/microsoft.extensions.configuration.abstractions/8.0.0/microsoft.extensions.configuration.abstractions.8.0.0.nupkg.sha512",
     "/home/chanette/.nuget/packages/microsoft.extensions.dependencyinjection/8.0.0/microsoft.extensions.dependencyinjection.8.0.0.nupkg.sha512",
     "/home/chanette/.nuget/packages/microsoft.extensions.dependencyinjection.abstractions/8.0.0/microsoft.extensions.dependencyinjection.abstractions.8.0.0.nupkg.sha512",
     "/home/chanette/.nuget/packages/microsoft.extensions.logging/8.0.0/microsoft.extensions.logging.8.0.0.nupkg.sha512",
@@ -26,6 +28,8 @@
     "/home/chanette/.nuget/packages/microsoft.openapi/1.2.3/microsoft.openapi.1.2.3.nupkg.sha512",
     "/home/chanette/.nuget/packages/microsoft.win32.systemevents/4.7.0/microsoft.win32.systemevents.4.7.0.nupkg.sha512",
     "/home/chanette/.nuget/packages/mysql.data/8.2.0/mysql.data.8.2.0.nupkg.sha512",
+    "/home/chanette/.nuget/packages/mysqlconnector/2.3.1/mysqlconnector.2.3.1.nupkg.sha512",
+    "/home/chanette/.nuget/packages/pomelo.entityframeworkcore.mysql/8.0.0-beta.2/pomelo.entityframeworkcore.mysql.8.0.0-beta.2.nupkg.sha512",
     "/home/chanette/.nuget/packages/swashbuckle.aspnetcore/6.5.0/swashbuckle.aspnetcore.6.5.0.nupkg.sha512",
     "/home/chanette/.nuget/packages/swashbuckle.aspnetcore.swagger/6.5.0/swashbuckle.aspnetcore.swagger.6.5.0.nupkg.sha512",
     "/home/chanette/.nuget/packages/swashbuckle.aspnetcore.swaggergen/6.5.0/swashbuckle.aspnetcore.swaggergen.6.5.0.nupkg.sha512",
