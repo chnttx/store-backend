@@ -3,7 +3,7 @@ namespace WebApplication2.Models;
 
 public class Shop
 {
-    public int ShopId { get; set; }
+    public Guid ShopId { get; set; }
     
     [Required]
     [StringLength(255, ErrorMessage = "ShopName cannot exceed 255 characters")]

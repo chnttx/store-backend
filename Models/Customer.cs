@@ -4,7 +4,7 @@ namespace WebApplication2.Models;
 
 public class Customer
 {
-    public int CustomerID { get; set; }
+    public Guid CustomerID { get; set; }
     
     [Required]
     [StringLength(255, ErrorMessage = "Name length too long")]

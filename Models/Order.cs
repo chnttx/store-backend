@@ -1,19 +1,20 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using WebApplication2.Enums;
 
 namespace WebApplication2.Models;
 
 [Table("Orders")]
 public class Order
 {
-    public int OrderId { get; set; }
-    public int CustomerId { get; set; }
+    public Guid OrderId { get; set; }
+    public Guid CustomerId { get; set; }
     
     [Required]
     public string DeliveryMethod { get; set; }
     
     [Required]
-    public string DeliveryStatus { get; set; }
+    public OrderStatusEnum DeliveryStatus { get; set; }
     
     [Required]
     public DateTime TimeCreated { get; set; }

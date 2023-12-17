@@ -4,8 +4,8 @@ namespace WebApplication2.Models;
 
 public class Item
 {
-    public int ItemId { get; set; }
-    public int ShopId { get; set; }
+    public Guid ItemId { get; set; }
+    public Guid ShopId { get; set; }
     
     [Required]
     [StringLength(255, ErrorMessage = "Name too long")]
