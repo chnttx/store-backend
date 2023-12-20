@@ -6,17 +6,12 @@ namespace WebApplication2.Data;
 public class DataContext : DbContext
 {
 
-    private readonly IConfiguration Configuration;
-
-    public DataContext(IConfiguration configuration)
+    public DataContext()
     {
-        Configuration = configuration;
     }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder options)
+    public DataContext(DbContextOptions<DataContext> options) : base(options)
     {
-        var connectionString = Configuration.GetConnectionString("WebApiDatabase");
-        options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
     }
     public DbSet<Order> Orders { get; set; }
     public DbSet<Shop> Shops { get; set; }
