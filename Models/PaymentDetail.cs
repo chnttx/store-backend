@@ -1,5 +1,7 @@
-namespace WebApplication2.Models;
+using System.ComponentModel.DataAnnotations.Schema;
 
+namespace WebApplication2.Models;
+[Table("PaymentDetail")]
 public class PaymentDetail
 {
     public Guid PaymentId { get; set; }

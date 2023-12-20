@@ -1,6 +1,8 @@
 using System.ComponentModel.DataAnnotations;
-namespace WebApplication2.Models;
+using System.ComponentModel.DataAnnotations.Schema;
 
+namespace WebApplication2.Models;
+[Table("Shop")]
 public class Shop
 {
     public Guid ShopId { get; set; }

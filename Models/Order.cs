@@ -1,10 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using WebApplication2.Enums;
 
 namespace WebApplication2.Models;
 
-[Table("Orders")]
+[Table("OrderTable")]
 public class Order
 {
     public Guid OrderId { get; set; }
@@ -14,7 +13,7 @@ public class Order
     public string DeliveryMethod { get; set; }
     
     [Required]
-    public OrderStatusEnum DeliveryStatus { get; set; }
+    public string DeliveryStatus { get; set; }
     
     [Required]
     public DateTime TimeCreated { get; set; }
@@ -22,6 +21,7 @@ public class Order
     [Required]
     public DateOnly DueDate { get; set; }
 
+    [Required]
     public Customer Customer { get; set; } = null!;
 
     public ICollection<PaymentDetail> Payments = null!;
