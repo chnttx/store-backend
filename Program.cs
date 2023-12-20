@@ -1,7 +1,20 @@
+using Microsoft.EntityFrameworkCore;
+using WebApplication2.Data;
+using WebApplication2.Services;
+using WebApplication2.Services.Interface;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddSwaggerGen();
 builder.Services.AddControllersWithViews();
+
+string? connectionString = builder.Configuration["ConnectionStrings:WebApiDatabase"] ?? string.Empty;
+builder.Services.AddDbContext<DataContext>(options =>
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+builder.Services.AddTransient<IOrderService, OrderService>();
+builder.Services.AddTransient<ICustomerService, CustomerService>();
+builder.Services.AddTransient<IItemService, ItemService>();
 
 var app = builder.Build();
 
@@ -13,6 +26,8 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+app.UseSwagger();
+app.UseSwaggerUI();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
