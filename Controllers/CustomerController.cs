@@ -1,23 +1,17 @@
 using Microsoft.AspNetCore.Mvc;
 using WebApplication2.Models;
 using WebApplication2.Services;
+using WebApplication2.Services.Interface;
 
 namespace WebApplication2.Controllers;
 
-public class CustomerController : Controller
+public class CustomerController(ICustomerService customerService) : Controller
 {
-    private CustomerService _customerService;
-
-    public CustomerController(CustomerService customerService)
-    {
-        _customerService = customerService;
-    }
-
-    [HttpGet]
     [Route("customers")]
-    public IActionResult GetAllCustomers()
+    [HttpGet]
+    public ActionResult GetAllCustomers()
     {
-        var allCustomers = _customerService.GetAllCustomers();
+        ICollection<Customer> allCustomers = customerService.GetAllCustomers();
 
         return Ok(allCustomers);
     }

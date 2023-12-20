@@ -1,23 +1,16 @@
 using Microsoft.AspNetCore.Mvc;
+using WebApplication2.Models;
 using WebApplication2.Services.Interface;
 
 namespace WebApplication2.Controllers;
 
-public class ItemController : Controller
+public class ItemController(IItemService itemService) : Controller
 {
-    private IItemService _itemService;
-
-    public ItemController(IItemService itemService)
-    {
-        _itemService = itemService;
-    }
-
-    [Route("Items")]
+    [Route("items")]
     [HttpGet]
-    public IActionResult GetAllItems()
+    public ActionResult GetAllItems()
     {
-        var allOrders = _itemService.GetAllItems();
-
+        ICollection<Item> allOrders = itemService.GetAllItems();
         return Ok(allOrders);
     }
 }
