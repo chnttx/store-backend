@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using WebApplication2.Models;
-using WebApplication2.Request;
 using WebApplication2.Services.Interface;
 
 namespace WebApplication2.Controllers;
@@ -24,8 +23,16 @@ public class CustomerController : Controller
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public IActionResult GetAllCustomers([FromHeader] string secret_key)
     {
-        var allCustomers = _customerService.GetAllCustomers();
-        return Ok(allCustomers);
+        try
+        {
+            var allCustomers = _customerService.GetAllCustomers();
+            return Ok(allCustomers);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e.StackTrace);
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
     }
 
     [HttpGet("{queryCustomerId}")]
@@ -49,10 +56,6 @@ public class CustomerController : Controller
         }
     }
 
-    // [HttpPost]
-    // [ProducesResponseType(StatusCodes.Status201Created)]
-    // public async Task<IActionResult> CreateCustomer([FromQuery] CustomerRequest customerRequest)
-    // {
-    //     throw new NotImplementedException();
-    // }
+    // [HttpPatch]
+    
 }
