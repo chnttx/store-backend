@@ -1,8 +1,9 @@
 using WebApplication2.Data;
+using WebApplication2.Models;
 
 namespace WebApplication2;
 
-public class DataValidator
+public class DataValidator : IDataValidator
 {
     private readonly DataContext _context;
 
@@ -13,21 +14,21 @@ public class DataValidator
     
     public bool CheckItemIdInDatabase(Guid itemId)
     {
-        List<Guid> allItemIdsInDatabase = (
-            from i in _context.Items
-            select i.ItemId
-        ).ToList();
-
-        return allItemIdsInDatabase.Contains(itemId);
+        return Enumerable.Any(_context.Items, i => i.ItemId == itemId);
     }
 
     public bool CheckCustomerIdInDatabase(Guid customerId)
     {
-        List<Guid> allCustomerIdInDatabase = (
-            from c in _context.Customers
-            select c.CustomerID).ToList();
-
-        return allCustomerIdInDatabase.Contains(customerId);
+        return Enumerable.Any(_context.Customers, c => c.CustomerID == customerId);
     }
-    
+
+    public bool CheckKeywordInItemName(string keyword)
+    {
+        return Enumerable.Any(_context.Items, i => i.ItemName.ToLower().Contains(keyword));
+    }
+
+    public bool CheckOrderInDatabase(Guid orderId)
+    {
+        return Enumerable.Any(_context.Orders, o => o.OrderId == orderId);
+    }
 }
