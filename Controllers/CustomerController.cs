@@ -55,5 +55,4 @@ public class CustomerController : Controller
     // {
     //     throw new NotImplementedException();
     // }
-    [HttpPatch]
 }
