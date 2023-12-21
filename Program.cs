@@ -1,4 +1,6 @@
+using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
+using WebApplication2;
 using WebApplication2.Data;
 using WebApplication2.Services;
 using WebApplication2.Services.Interface;
@@ -7,15 +9,23 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddSwaggerGen();
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+    });
 
 string? connectionString = builder.Configuration["ConnectionStrings:WebApiDatabase"] ?? string.Empty;
 builder.Services.AddDbContext<DataContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+builder.Services.AddTransient<IDataValidator, DataValidator>();
 builder.Services.AddTransient<IOrderService, OrderService>();
 builder.Services.AddTransient<ICustomerService, CustomerService>();
 builder.Services.AddTransient<IItemService, ItemService>();
-
+builder.Services.AddMvc(options =>
+{
+    options.Filters.Add(typeof(SecretKeyAttribute));
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
