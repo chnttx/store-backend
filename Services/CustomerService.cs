@@ -14,32 +14,19 @@ public class CustomerService : ICustomerService
         _context = context;
     }
 
-    public void CreateCustomer(CustomerRequest customerRequest)
+    public Customer CreateCustomer(CustomerRequest customerRequest)
     {
         throw new NotImplementedException();
     }
 
-    public void GetCustomerById(int customerId)
+    public Customer GetCustomerById(Guid queryCustomerId)
     {
-        throw new NotImplementedException();
+        return _context.Customers.
+            Single(c => c.CustomerID == queryCustomerId);
     }
 
     public ICollection<Customer> GetAllCustomers()
     {
-        throw new NotImplementedException();
+        return _context.Customers.ToList();
     }
-
-    // public Order MapOrderRequestToOrder(OrderRequest orderRequest)
-    // {
-    //     Order newOrderResult = new Order();
-    //     newOrderResult.OrderId = Guid.NewGuid();
-    //     newOrderResult.CustomerId = orderRequest.CustomerId;
-    //     newOrderResult.TimeCreated = DateTime.Now;
-    //     newOrderResult.DeliveryStatus = "Processing";
-    //     newOrderResult.DeliveryMethod = orderRequest.DeliveryMethod;
-    //     DateTime newDueDateTime = newOrderResult.TimeCreated.AddDays(7);
-    //     DateOnly newDueDate = newDueDateTime.;
-    //
-    //
-    // }
 }

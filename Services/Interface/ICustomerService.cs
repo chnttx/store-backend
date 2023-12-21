@@ -5,7 +5,7 @@ namespace WebApplication2.Services.Interface;
 
 public interface ICustomerService
 {
-    void CreateCustomer(CustomerRequest customerRequest);
-    void GetCustomerById(int customerId);
+    Customer CreateCustomer(CustomerRequest customerRequest);
+    Customer GetCustomerById(Guid queryCustomerId);
     ICollection<Customer> GetAllCustomers();
 }

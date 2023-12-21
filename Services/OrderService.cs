@@ -11,17 +11,12 @@ namespace WebApplication2.Services;
 
 public class OrderService : IOrderService
 {
-    private readonly DataContext context;
-    public OrderService(DataContext context1)
+    private readonly DataContext _context;
+    public OrderService(DataContext context)
     {
-        context = context1;
+        _context = context;
     }
     public void CreateOrder()
-    {
-        throw new NotImplementedException();
-    }
-
-    public OrderResponse GetOrderById(Guid orderId)
     {
         throw new NotImplementedException();
     }
@@ -29,10 +24,10 @@ public class OrderService : IOrderService
     public List<OrderResponse> GetAllOrders()
      {
          var allOrders =
-             from o in context.Orders
-             join oi in context.OrderItems on o.OrderId equals oi.OrderId
-             join i in context.Items on oi.ItemId equals i.ItemId
-             join s in context.Shops on i.ShopId equals s.ShopId
+             from o in _context.Orders
+             join oi in _context.OrderItems on o.OrderId equals oi.OrderId
+             join i in _context.Items on oi.ItemId equals i.ItemId
+             join s in _context.Shops on i.ShopId equals s.ShopId
              select new 
              {
                  orderId = o.OrderId,
@@ -90,13 +85,13 @@ public class OrderService : IOrderService
          return allOrderResponses;
      }
 
-    OrderResponse IOrderService.GetOrderById(Guid queryOrderId)
+    public OrderResponse GetOrderById(Guid queryOrderId)
     {
         var orderQuery =
-            from o in context.Orders
-            join oi in context.OrderItems on o.OrderId equals oi.OrderId
-            join i in context.Items on oi.ItemId equals i.ItemId
-            join s in context.Shops on i.ShopId equals s.ShopId
+            from o in _context.Orders
+            join oi in _context.OrderItems on o.OrderId equals oi.OrderId
+            join i in _context.Items on oi.ItemId equals i.ItemId
+            join s in _context.Shops on i.ShopId equals s.ShopId
             where o.OrderId == queryOrderId
             select new 
             {
@@ -113,7 +108,7 @@ public class OrderService : IOrderService
         // else 
         List<string> allShopsInOrder = new List<string>();
         List<string> allItemsInOrder = new List<string>();
-        float totalCost = orderQuery.Sum(oq => (oq.itemPrice * oq.quantity));
+        var totalCost = orderQuery.Sum(oq => (oq.itemPrice * oq.quantity));
         int itemCount = orderQuery.Count();
         foreach (var grouping in orderQuery)
         {
@@ -136,7 +131,8 @@ public class OrderService : IOrderService
 
     public Order CreateOrder(OrderRequest newOrderRequest)
     {
-        if (!newOrderRequest.OrderItemRequests.Any()) return null;
+        // if (!newOrderRequest.OrderItemRequests.Any()) throw new Exception("No items");
+        
 
         Order newOrder = new Order()
         {
@@ -146,13 +142,13 @@ public class OrderService : IOrderService
             DeliveryStatus = "Processing",
             TimeCreated = DateTime.Now,
             DueDate = DateOnly.FromDateTime(DateTime.Now.AddDays(7)),
-            Customer = context.Customers.FirstOrDefault(c => c.CustomerID == newOrderRequest.CustomerId) ?? null, 
+            Customer = _context.Customers.Single(c => c.CustomerID == newOrderRequest.CustomerId) ?? null, 
             Payments = new List<PaymentDetail>(),
         };
-        context.Orders.Add(newOrder); 
+        _context.Orders.Add(newOrder); 
         foreach (OrderItemRequest orderItemRequest in newOrderRequest.OrderItemRequests)
         {
-            Item currentItem = context.Items.Single(i => i.ItemId == orderItemRequest.itemId);
+            Item currentItem = _context.Items.Single(i => i.ItemId == orderItemRequest.itemId);
             if (currentItem.ItemStock < orderItemRequest.quantity)
                 throw new Exception("Not enough items in stock");
             currentItem.ItemStock -= orderItemRequest.quantity;
@@ -163,14 +159,43 @@ public class OrderService : IOrderService
                 ItemPrice = orderItemRequest.itemPrice,
                 Quantity = orderItemRequest.quantity
             };
-            context.OrderItems.Add(newOrderItem);
+            _context.OrderItems.Add(newOrderItem);
         }
-        context.SaveChanges();
+        _context.SaveChanges();
         return newOrder;
     }
 
-    public void RemoveItemFromOrder(Guid idOfItemToRemove, Guid orderId)
+    public OrderItem RemoveItemFromOrder(Guid idOfItemToRemove, Guid orderId)
     {
-        
+        IQueryable<OrderItem> allOrderItemById = (
+            from oi in _context.OrderItems
+            where oi.OrderId == orderId
+            select oi);
+        OrderItem orderItemToRemove = null;
+        foreach (OrderItem oi in allOrderItemById)
+        {
+            if (oi.ItemId != idOfItemToRemove) continue;
+            orderItemToRemove = oi;
+            break;
+        }
+
+        if (orderItemToRemove == null) throw new Exception("Item not in order");
+        Item itemToRemove = _context.Items.First(i => i.ItemId == idOfItemToRemove);
+        itemToRemove.ItemStock += orderItemToRemove.Quantity;
+        _context.OrderItems.Remove(orderItemToRemove);
+        _context.SaveChanges();
+        return orderItemToRemove;
+    }
+
+    public List<Guid> GetOrderByKeyword(string queryKeyword)
+    {
+        var orderQueryByKeyword = (
+            from o in _context.Orders
+            join oi in _context.OrderItems on o.OrderId equals oi.OrderId
+            join i in _context.Items on oi.ItemId equals i.ItemId
+            where i.ItemName.ToLower().Contains(queryKeyword)
+            select o.OrderId).ToList();
+
+        return orderQueryByKeyword;
     }
 }

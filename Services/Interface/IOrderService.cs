@@ -9,4 +9,6 @@ public interface IOrderService
     Order CreateOrder(OrderRequest newOrderRequest);
     OrderResponse GetOrderById(Guid queryOrderId);
     List<OrderResponse> GetAllOrders();
+    List<Guid> GetOrderByKeyword(string queryKeyword);
+    OrderItem RemoveItemFromOrder(Guid idOfItemToRemove, Guid orderId);
 }
