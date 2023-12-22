@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Asp.Versioning;
 using Microsoft.EntityFrameworkCore;
 using WebApplication2;
 using WebApplication2.Data;
@@ -18,6 +19,7 @@ builder.Services.AddControllersWithViews()
 string? connectionString = builder.Configuration["ConnectionStrings:WebApiDatabase"] ?? string.Empty;
 builder.Services.AddDbContext<DataContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+builder.Services.AddHostedService<HourlyBackgroundService>();
 builder.Services.AddTransient<IDataValidator, DataValidator>();
 builder.Services.AddTransient<IOrderService, OrderService>();
 builder.Services.AddTransient<ICustomerService, CustomerService>();
@@ -30,6 +32,16 @@ builder.Services.AddLogging(logging =>
 {
     logging.AddConsole();
     logging.AddDebug();
+});
+builder.Services.AddApiVersioning(options =>
+{
+    options.ReportApiVersions = true;
+    options.AssumeDefaultVersionWhenUnspecified = true;
+    options.DefaultApiVersion = new ApiVersion(1, 0);
+    options.ApiVersionReader = ApiVersionReader.Combine(
+        new QueryStringApiVersionReader("api-version"),
+        new HeaderApiVersionReader("Accept-Version"),
+        new MediaTypeApiVersionReader("api-version"));
 });
 var app = builder.Build();
 
