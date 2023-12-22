@@ -60,3 +60,6 @@
 /home/chanette/RiderProjects/WebApplication2/bin/Debug/net8.0/MySqlConnector.dll
 /home/chanette/RiderProjects/WebApplication2/bin/Debug/net8.0/Pomelo.EntityFrameworkCore.MySql.dll
 /home/chanette/RiderProjects/WebApplication2/obj/Debug/net8.0/WebApplication2.sourcelink.json
+/home/chanette/RiderProjects/WebApplication2/bin/Debug/net8.0/Asp.Versioning.Abstractions.dll
+/home/chanette/RiderProjects/WebApplication2/bin/Debug/net8.0/Asp.Versioning.Http.dll
+/home/chanette/RiderProjects/WebApplication2/bin/Debug/net8.0/Asp.Versioning.Mvc.dll

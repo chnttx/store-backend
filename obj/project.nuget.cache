@@ -1,9 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "brP75LR/pYTXTEnwEgQUCT0D1rzTpt5hRI3Qt6FO1dV5gZurcfuoQZcDUdnjXd6JtbtTnAuAnzQn7oDg40f4YA==",
+  "dgSpecHash": "uWEHWmKip3/+kNaXSkKGrFuYXneValpIqzZxvkzbjacGLQyOkAYI2QNCU/CiwCBdiN0ZJwfwVdaSjqkBnPIdmQ==",
   "success": true,
   "projectFilePath": "/home/chanette/RiderProjects/WebApplication2/WebApplication2.csproj",
   "expectedPackageFiles": [
+    "/home/chanette/.nuget/packages/asp.versioning.abstractions/8.0.0/asp.versioning.abstractions.8.0.0.nupkg.sha512",
+    "/home/chanette/.nuget/packages/asp.versioning.http/8.0.0/asp.versioning.http.8.0.0.nupkg.sha512",
+    "/home/chanette/.nuget/packages/asp.versioning.mvc/8.0.0/asp.versioning.mvc.8.0.0.nupkg.sha512",
     "/home/chanette/.nuget/packages/bouncycastle.cryptography/2.2.1/bouncycastle.cryptography.2.2.1.nupkg.sha512",
     "/home/chanette/.nuget/packages/google.protobuf/3.21.9/google.protobuf.3.21.9.nupkg.sha512",
     "/home/chanette/.nuget/packages/k4os.compression.lz4/1.3.5/k4os.compression.lz4.1.3.5.nupkg.sha512",
