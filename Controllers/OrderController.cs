@@ -1,3 +1,4 @@
+using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using WebApplication2.Models;
 using WebApplication2.Request;
@@ -6,7 +7,8 @@ using WebApplication2.Services.Interface;
 namespace WebApplication2.Controllers;
 
 [ApiController]
-[Route("api/orders")]
+[ApiVersion("1.0")]
+[Route("api/{v:apiVersion}/orders")]
 public class OrderController: Controller
 {
     private readonly ILogger<OrderController> _logger;
