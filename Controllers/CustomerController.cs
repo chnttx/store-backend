@@ -18,10 +18,9 @@ public class CustomerController : Controller
     }
     
     [HttpGet]
-    [SecretKey]
     [ProducesResponseType<List<Customer>>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public IActionResult GetAllCustomers([FromHeader] string secret_key)
+    public IActionResult GetAllCustomers()
     {
         try
         {
@@ -36,11 +35,10 @@ public class CustomerController : Controller
     }
 
     [HttpGet("{queryCustomerId}")]
-    [SecretKey]
     [ProducesResponseType<Customer>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public IActionResult GetCustomerById(string secret_key, Guid queryCustomerId)
+    public IActionResult GetCustomerById( Guid queryCustomerId)
     {
         if (!_validator.CheckCustomerIdInDatabase(queryCustomerId))
             throw new Exception($"Customer with ID {queryCustomerId} doesn't exist");

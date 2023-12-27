@@ -18,10 +18,9 @@ public class ItemController : Controller
         _logger = logger;
     }
     [HttpGet]
-    [SecretKey]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public IActionResult GetAllItems([FromHeader]string secret_key)
+    public IActionResult GetAllItems()
     {
         try
         {
