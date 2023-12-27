@@ -2,8 +2,11 @@ using System.Text.Json.Serialization;
 using Asp.Versioning;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using Quartz;
 using WebApplication2.Data;
+using WebApplication2.Jobs;
 using WebApplication2.Services;
+using WebApplication2.Services.Implementation;
 using WebApplication2.Services.Interface;
 
 namespace WebApplication2
@@ -53,6 +56,21 @@ namespace WebApplication2
                     new HeaderApiVersionReader("Accept-Version"),
                     new MediaTypeApiVersionReader("api-version"));
             });
+
+            services.AddQuartz(opt =>
+            {
+                // opt.UseMicrosoftDependencyInjectionJobFactory();
+                var jobKey = new JobKey("UpdateVipJob");
+                opt.AddJob<UpdateVipJob>(options => options.WithIdentity(jobKey));
+                opt.AddTrigger(options =>
+                {
+                    options.ForJob(jobKey)
+                        .WithIdentity("UpdateVipJob-trigger")
+                        .WithCronSchedule(Configuration.GetSection("UpdateVipJob:CronSchedule")
+                            .Value ?? "0 * * * * ?");
+                });
+            });
+            services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
