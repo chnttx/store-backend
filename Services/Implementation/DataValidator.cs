@@ -31,4 +31,10 @@ public class DataValidator : IDataValidator
     {
         return Enumerable.Any(_context.Orders, o => o.OrderId == orderId);
     }
+
+// orderId    public bool CheckValidDeliveryMethod(string deliveryMethod)
+//     {
+//         return deliveryMethod.ToLower().Equals("express") || deliveryMethod.ToLower().Equals("standard");
+//     }
+    
 }

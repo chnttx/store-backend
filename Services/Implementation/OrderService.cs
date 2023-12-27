@@ -16,38 +16,42 @@ public class OrderService : IOrderService
     {
         _context = context;
     }
-    public void CreateOrder()
-    {
-        throw new NotImplementedException();
-    }
-
-    public List<OrderResponse> GetAllOrders()
+    public async Task<List<OrderResponse>> GetAllOrders()
      {
-         var allOrders =
-             from o in _context.Orders
-             join oi in _context.OrderItems on o.OrderId equals oi.OrderId
-             join i in _context.Items on oi.ItemId equals i.ItemId
-             join s in _context.Shops on i.ShopId equals s.ShopId
-             select new 
+         var allOrders = await _context.Orders
+             .Join(_context.OrderItems, o => o.OrderId, oi => oi.OrderId, (o, oi) => new { Order = o, OrderItem = oi })
+             .Join(_context.Items, oi => oi.OrderItem.ItemId, i => i.ItemId, (oi, i) => new { oi.Order, oi.OrderItem, Item = i })
+             .Join(_context.Shops, i => i.Item.ShopId, s => s.ShopId, (i, s) => new
              {
-                 orderId = o.OrderId,
+                 orderId = i.Order.OrderId,
                  shopName = s.ShopName,
-                 itemName = i.ItemName,
-                 itemPrice = oi.ItemPrice,
-                 quantity = oi.Quantity,
-                 dueDate = o.DueDate, 
-                 deliveryStatus = o.DeliveryStatus
-             };
+                 itemName = i.Item.ItemName,
+                 itemPrice = i.OrderItem.ItemPrice,
+                 quantity = i.OrderItem.Quantity,
+                 dueDate = i.Order.DueDate,
+                 deliveryStatus = i.Order.DeliveryStatus
+             })
+             .ToListAsync();
+
+         
          // {orderId: [shopName]}
          Dictionary<Guid, List<string>> groupShopsByOrderId = new Dictionary<Guid, List<string>>();
          
          // {orderId: [itemName]}
-         Dictionary<Guid, List<string>> groupItemsByOrderId = new Dictionary<Guid, List<string>>();
+         Dictionary<Guid, List<OrderItemResponse>> groupOrderItemsByOrderId = new Dictionary<Guid, List<OrderItemResponse>>();
          foreach (var grouping in allOrders)
          {
-             if (groupItemsByOrderId.ContainsKey(grouping.orderId)) 
-                 groupItemsByOrderId[grouping.orderId].Add(grouping.itemName);
-             else groupItemsByOrderId.Add(grouping.orderId, [grouping.itemName]);
+             OrderItemResponse orderItemResponse = new OrderItemResponse()
+             {
+                 itemName = grouping.itemName,
+                 itemQuantity = grouping.quantity,
+                 itemPrice = grouping.itemPrice,
+                 totalPrice = grouping.itemPrice * grouping.quantity
+             };
+             
+             if (groupOrderItemsByOrderId.ContainsKey(grouping.orderId))
+                 groupOrderItemsByOrderId[grouping.orderId].Add(orderItemResponse);
+             else groupOrderItemsByOrderId.Add(grouping.orderId, [orderItemResponse]);
              
              if (groupShopsByOrderId.ContainsKey(grouping.orderId))
                  groupShopsByOrderId[grouping.orderId].Add(grouping.shopName);
@@ -68,8 +72,8 @@ public class OrderService : IOrderService
          List<OrderResponse> allOrderResponses = new List<OrderResponse>();
          foreach (var g in groupByOrderId)
          {
-             List<string> itemsByOrderId = groupItemsByOrderId[g.orderId];
              List<string> shopsByOrderId = groupShopsByOrderId[g.orderId];
+             List<OrderItemResponse> orderItemsByOrderId = groupOrderItemsByOrderId[g.orderId];
              OrderResponse newOrderResponse = new OrderResponse
              {
                  OrderId = g.orderId,
@@ -78,42 +82,50 @@ public class OrderService : IOrderService
                  TotalCost = g.totalCost,
                  ItemCount = g.itemCount,
                  allShops = shopsByOrderId,
-                 allItems = itemsByOrderId
+                 allItems = orderItemsByOrderId
              };
              allOrderResponses.Add(newOrderResponse);
          }
          return allOrderResponses;
      }
 
-    public OrderResponse GetOrderById(Guid queryOrderId)
+    public async Task<OrderResponse> GetOrderById(Guid queryOrderId)
     {
-        var orderQuery =
-            from o in _context.Orders
-            join oi in _context.OrderItems on o.OrderId equals oi.OrderId
-            join i in _context.Items on oi.ItemId equals i.ItemId
-            join s in _context.Shops on i.ShopId equals s.ShopId
-            where o.OrderId == queryOrderId
-            select new 
+        var orderQuery = await _context.Orders
+            .Join(_context.OrderItems, o => o.OrderId, oi => oi.OrderId, (o, oi) => new { Order = o, OrderItem = oi })
+            .Join(_context.Items, oi => oi.OrderItem.ItemId, i => i.ItemId, (oi, i) => new { oi.Order, oi.OrderItem, Item = i })
+            .Join(_context.Shops, i => i.Item.ShopId, s => s.ShopId, (i, s) => new
             {
-                orderId = o.OrderId,
+                orderId = i.Order.OrderId,
                 shopName = s.ShopName,
-                itemName = i.ItemName,
-                itemPrice = oi.ItemPrice,
-                quantity = oi.Quantity,
-                dueDate = o.DueDate, 
-                deliveryStatus = o.DeliveryStatus
-            };
-        if (!orderQuery.Any()) return null;
+                itemName = i.Item.ItemName,
+                itemPrice = i.OrderItem.ItemPrice,
+                quantity = i.OrderItem.Quantity,
+                dueDate = i.Order.DueDate,
+                deliveryStatus = i.Order.DeliveryStatus
+            })
+            .Where(x => x.orderId == queryOrderId)
+            .ToListAsync();
+
+        
+        if (orderQuery.Count == 0) return null!;
         
         // else 
         List<string> allShopsInOrder = new List<string>();
-        List<string> allItemsInOrder = new List<string>();
+        List<OrderItemResponse> allItemsInOrder = new List<OrderItemResponse>();
         var totalCost = orderQuery.Sum(oq => (oq.itemPrice * oq.quantity));
         int itemCount = orderQuery.Count();
         foreach (var grouping in orderQuery)
         {
+            OrderItemResponse orderItemResponse = new OrderItemResponse()
+            {
+                itemName = grouping.itemName,
+                itemPrice = grouping.itemPrice,
+                itemQuantity = grouping.quantity,
+                totalPrice = grouping.itemPrice * grouping.quantity
+            };
             allShopsInOrder.Add(grouping.shopName);
-            allItemsInOrder.Add(grouping.itemName);
+            allItemsInOrder.Add(orderItemResponse);
         }
 
         OrderResponse orderResponseQuery = new OrderResponse
@@ -131,9 +143,6 @@ public class OrderService : IOrderService
 
     public Order CreateOrder(OrderRequest newOrderRequest)
     {
-        // if (!newOrderRequest.OrderItemRequests.Any()) throw new Exception("No items");
-        
-
         Order newOrder = new Order()
         {
             OrderId = Guid.NewGuid(),
@@ -142,9 +151,10 @@ public class OrderService : IOrderService
             DeliveryStatus = "Processing",
             TimeCreated = DateTime.Now,
             DueDate = DateOnly.FromDateTime(DateTime.Now.AddDays(7)),
-            Customer = _context.Customers.Single(c => c.CustomerID == newOrderRequest.CustomerId) ?? null, 
+            Customer = (_context.Customers.Single(c => c.CustomerID == newOrderRequest.CustomerId) ?? null)!, 
             Payments = new List<PaymentDetail>(),
         };
+        
         _context.Orders.Add(newOrder); 
         foreach (OrderItemRequest orderItemRequest in newOrderRequest.OrderItemRequests)
         {
@@ -187,15 +197,57 @@ public class OrderService : IOrderService
         return orderItemToRemove;
     }
 
-    public List<Guid> GetOrderByKeyword(string queryKeyword)
+    public Task<OrderResponse> DeleteOrder(Guid orderId)
     {
-        var orderQueryByKeyword = (
+        throw new NotImplementedException();
+    }
+
+    public async Task<List<OrderResponse>> GetOrderByKeyword(string queryKeyword)
+    {
+        var orderQueryByKeyword = await (
             from o in _context.Orders
             join oi in _context.OrderItems on o.OrderId equals oi.OrderId
             join i in _context.Items on oi.ItemId equals i.ItemId
             where i.ItemName.ToLower().Contains(queryKeyword)
-            select o.OrderId).ToList();
+            select new { Order = o, OrderItem = oi, Item = i }).ToListAsync();
 
-        return orderQueryByKeyword;
+        var groupedOrders = orderQueryByKeyword.GroupBy(x => x.Order.OrderId);
+
+        List<OrderResponse> resultOrderQueryByKeyword = new List<OrderResponse>();
+        foreach (var group in groupedOrders)
+        {
+            float totalCost = 0;
+            List<string> allShops = new List<string>();
+            List<OrderItemResponse> allItemsInResponse = new List<OrderItemResponse>();
+
+            foreach (var order in group)
+            {
+                totalCost += order.OrderItem.Quantity * order.OrderItem.ItemPrice;
+                OrderItemResponse orderItemResponse = new OrderItemResponse()
+                {
+                    itemName = order.Item.ItemName,
+                    itemQuantity = order.OrderItem.Quantity,
+                    itemPrice = order.OrderItem.ItemPrice,
+                    totalPrice = order.OrderItem.ItemPrice * order.OrderItem.Quantity,
+                };
+                allItemsInResponse.Add(orderItemResponse);
+                allShops.Add(order.Item.Shop.ShopName);
+            }
+
+            OrderResponse resultOrderResponse = new OrderResponse()
+            {
+                OrderId = group.Key,
+                TotalCost = totalCost,
+                ItemCount = group.Count(),
+                DueDate = group.First().Order.DueDate,
+                DeliveryStatus = group.First().Order.DeliveryStatus,
+                allShops = allShops,
+                allItems = allItemsInResponse
+            };
+
+            resultOrderQueryByKeyword.Add(resultOrderResponse);
+        }
+        return resultOrderQueryByKeyword;
     }
+    
 }

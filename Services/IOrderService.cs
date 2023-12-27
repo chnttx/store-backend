@@ -7,8 +7,9 @@ namespace WebApplication2.Services.Interface;
 public interface IOrderService
 {
     Order CreateOrder(OrderRequest newOrderRequest);
-    OrderResponse GetOrderById(Guid queryOrderId);
-    List<OrderResponse> GetAllOrders();
-    List<Guid> GetOrderByKeyword(string queryKeyword);
+    Task<OrderResponse> GetOrderById(Guid queryOrderId);
+    Task<List<OrderResponse>> GetAllOrders();
+    Task<List<OrderResponse>> GetOrderByKeyword(string queryKeyword);
     OrderItem RemoveItemFromOrder(Guid idOfItemToRemove, Guid orderId);
+    Task<OrderResponse> DeleteOrder(Guid orderId);
 }
