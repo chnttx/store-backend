@@ -1,6 +1,5 @@
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
-using WebApplication2.Models;
 using WebApplication2.Request;
 using WebApplication2.Response;
 using WebApplication2.Services.Interface;
@@ -27,11 +26,11 @@ public class OrderController: Controller
     [ProducesResponseType<List<OrderResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public IActionResult GetAllOrders([FromHeader] string secret_key)
+    public async Task<IActionResult> GetAllOrders([FromHeader] string secret_key)
     {
         try
         {
-            var allOrderResponses = _orderService.GetAllOrders();
+            var allOrderResponses = await _orderService.GetAllOrders();
             return Ok(allOrderResponses);
         }
         catch (Exception e)
@@ -46,13 +45,13 @@ public class OrderController: Controller
     [ProducesResponseType<OrderResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public IActionResult GetOrderById([FromHeader] string secret_key, Guid queryOrderId)
+    public async Task<IActionResult> GetOrderById([FromHeader] Guid queryOrderId)
     {
         if (!_validator.CheckOrderInDatabase(queryOrderId))
-            throw new Exception($"No order with id {queryOrderId}");
+            return NotFound($"Order with '{queryOrderId}' not in database");
         try
         {
-            var orderQueryResult = _orderService.GetOrderById(queryOrderId);
+            var orderQueryResult = await _orderService.GetOrderById(queryOrderId);
             return Ok(orderQueryResult);
         }
         catch (Exception e)
@@ -67,13 +66,13 @@ public class OrderController: Controller
     [ProducesResponseType<List<OrderResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public IActionResult GetOrdersByKeyword([FromHeader] string secret_key, string queryKeyword)
+    public async Task<IActionResult> GetOrdersByKeyword([FromHeader] string secret_key, string queryKeyword)
     {
         if (!_validator.CheckKeywordInItemName(queryKeyword))
-            throw new Exception($"No item containing {queryKeyword}");
+            return NotFound($"No item name containing '{queryKeyword}'");
         try
         {
-            var orderKeywordResult = _orderService.GetOrderByKeyword(queryKeyword);
+            var orderKeywordResult = await _orderService.GetOrderByKeyword(queryKeyword);
             return Ok(orderKeywordResult);
         }
         catch (Exception e)
@@ -87,11 +86,13 @@ public class OrderController: Controller
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public IActionResult CreateOrder([FromQuery] OrderRequest orderRequest)
+    public async Task<IActionResult> CreateOrder([FromQuery] OrderRequest orderRequest)
     {
+        if (!_validator.CheckCustomerIdInDatabase(orderRequest.CustomerId))
+            return NotFound($"Customer with id '{orderRequest.CustomerId}' not in database"); 
         try
         {
-            var newOrder = _orderService.CreateOrder(orderRequest);
+            var newOrder = await Task.FromResult(_orderService.CreateOrder(orderRequest));
             return CreatedAtAction(nameof(GetOrderById), new { id = newOrder.OrderId }, newOrder);
         }
         catch (Exception e)
@@ -101,15 +102,14 @@ public class OrderController: Controller
         }
     }
 
-    [HttpDelete]
+    [HttpDelete("{orderId}/{itemIdToRemove}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> RemoveItemFromOrder(Guid itemIdToRemove, Guid orderId)
     {
         if (!_validator.CheckItemIdInDatabase(itemIdToRemove))
-            throw new Exception($"Item {itemIdToRemove} not in database");
+            return NotFound($"Item '{itemIdToRemove}' not in database");
         if (!_validator.CheckOrderInDatabase(orderId))
-            throw new Exception($"Order {orderId} not in database");
-
+            return NotFound($"Order '{orderId}' not in database");
         try
         {
             var orderItemToRemove = await Task.FromResult(_orderService.RemoveItemFromOrder(itemIdToRemove, orderId));
@@ -121,5 +121,17 @@ public class OrderController: Controller
             return StatusCode(StatusCodes.Status500InternalServerError, "An error occured");
         }
     }
+
+    // [HttpDelete("{orderId}")]
+    // [ProducesResponseType(StatusCodes.Status200OK)]
+    // public async Task<IActionResult> RemoveOrder(Guid orderId)
+    // {
+    //     if (!_validator.CheckOrderInDatabase(orderId))
+    //         return NotFound($"Order '{orderId}' not in database");
+    //     try
+    //     {
+    //         var orderToRemove = await Task.FromResult(_orderService);
+    //     }
+    // }
 }
 
