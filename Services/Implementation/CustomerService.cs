@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using WebApplication2.Data;
 using WebApplication2.Models;
 using WebApplication2.Request;
@@ -28,5 +29,23 @@ public class CustomerService : ICustomerService
     public ICollection<Customer> GetAllCustomers()
     {
         return _context.Customers.ToList();
+    }
+
+    public async Task UpdateVipCustomers()
+    {
+        var vipCustomers = await ( 
+            from o in _context.Orders
+            join oi in _context.OrderItems on o.OrderId equals oi.OrderId
+            group oi by o.CustomerId into g
+            where g.Select(oi => oi.ItemId).Distinct().Count() > 10 || 
+                  g.Sum(oi => oi.ItemPrice * oi.Quantity) > 1e6
+            select g.Key).ToListAsync();
+
+        foreach (var customer in vipCustomers.Select(customerId => _context.Customers.Find(customerId)).OfType<Customer>())
+        {
+            customer.IsVIP = 1;
+        }
+
+        await _context.SaveChangesAsync();
     }
 }

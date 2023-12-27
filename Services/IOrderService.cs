@@ -10,6 +10,6 @@ public interface IOrderService
     Task<OrderResponse> GetOrderById(Guid queryOrderId);
     Task<List<OrderResponse>> GetAllOrders();
     Task<List<OrderResponse>> GetOrderByKeyword(string queryKeyword);
-    OrderItem RemoveItemFromOrder(Guid idOfItemToRemove, Guid orderId);
+    Task<OrderItem> RemoveItemFromOrder(Guid idOfItemToRemove, Guid orderId);
     Task<OrderResponse> DeleteOrder(Guid orderId);
 }

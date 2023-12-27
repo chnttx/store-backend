@@ -8,4 +8,5 @@ public interface ICustomerService
     Customer CreateCustomer(CustomerRequest customerRequest);
     Customer GetCustomerById(Guid queryCustomerId);
     ICollection<Customer> GetAllCustomers();
+    Task UpdateVipCustomers();
 }

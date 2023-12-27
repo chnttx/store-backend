@@ -1,12 +1,11 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualBasic;
 using WebApplication2.Data;
 using WebApplication2.Models;
 using WebApplication2.Request;
 using WebApplication2.Response;
 using WebApplication2.Services.Interface;
 
-namespace WebApplication2.Services;
+namespace WebApplication2.Services.Implementation;
 
 
 public class OrderService : IOrderService
@@ -166,7 +165,7 @@ public class OrderService : IOrderService
             {
                 OrderId = newOrder.OrderId,
                 ItemId = currentItem.ItemId,
-                ItemPrice = orderItemRequest.itemPrice,
+                ItemPrice = currentItem.ItemPrice,
                 Quantity = orderItemRequest.quantity
             };
             _context.OrderItems.Add(newOrderItem);
@@ -175,12 +174,13 @@ public class OrderService : IOrderService
         return newOrder;
     }
 
-    public OrderItem RemoveItemFromOrder(Guid idOfItemToRemove, Guid orderId)
+    public async Task<OrderItem> RemoveItemFromOrder(Guid idOfItemToRemove, Guid orderId)
     {
-        IQueryable<OrderItem> allOrderItemById = (
+        var allOrderItemById = await (
             from oi in _context.OrderItems
             where oi.OrderId == orderId
-            select oi);
+            select oi).ToListAsync();
+        
         OrderItem orderItemToRemove = null;
         foreach (OrderItem oi in allOrderItemById)
         {
@@ -193,7 +193,7 @@ public class OrderService : IOrderService
         Item itemToRemove = _context.Items.First(i => i.ItemId == idOfItemToRemove);
         itemToRemove.ItemStock += orderItemToRemove.Quantity;
         _context.OrderItems.Remove(orderItemToRemove);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
         return orderItemToRemove;
     }
 
