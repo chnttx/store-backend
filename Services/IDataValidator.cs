@@ -6,4 +6,5 @@ public interface IDataValidator
     bool CheckCustomerIdInDatabase(Guid customerId);
     bool CheckKeywordInItemName(string keyword);
     bool CheckOrderInDatabase(Guid orderId);
+    bool CheckValidDeliveryMethod(string deliveryMethod);
 }

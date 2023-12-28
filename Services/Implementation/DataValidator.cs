@@ -1,10 +1,12 @@
 using WebApplication2.Data;
-using WebApplication2.Models;
 
-namespace WebApplication2;
+namespace WebApplication2.Services.Implementation;
 
 public class DataValidator : IDataValidator
 {
+    private static readonly string[] ALL_DELIVERY_METHODS = {
+        "standard", "express"
+    };
     private readonly DataContext _context;
 
     public DataValidator(DataContext context)
@@ -32,9 +34,10 @@ public class DataValidator : IDataValidator
         return Enumerable.Any(_context.Orders, o => o.OrderId == orderId);
     }
 
-// orderId    public bool CheckValidDeliveryMethod(string deliveryMethod)
-//     {
-//         return deliveryMethod.ToLower().Equals("express") || deliveryMethod.ToLower().Equals("standard");
-//     }
+    public bool CheckValidDeliveryMethod(string deliveryMethod)
+    {
+        deliveryMethod = deliveryMethod.Trim().ToLower();
+        return Array.Exists(ALL_DELIVERY_METHODS, w => w == deliveryMethod);
+    }
     
 }

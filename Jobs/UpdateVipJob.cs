@@ -1,4 +1,5 @@
 using Quartz;
+using WebApplication2.Services;
 using WebApplication2.Services.Interface;
 
 namespace WebApplication2.Jobs;

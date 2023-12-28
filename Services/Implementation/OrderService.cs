@@ -140,7 +140,7 @@ public class OrderService : IOrderService
         return orderResponseQuery;
     }
 
-    public Order CreateOrder(OrderRequest newOrderRequest)
+    public async Task<Order> CreateOrder(OrderRequest newOrderRequest)
     {
         Order newOrder = new Order()
         {
@@ -150,14 +150,14 @@ public class OrderService : IOrderService
             DeliveryStatus = "Processing",
             TimeCreated = DateTime.Now,
             DueDate = DateOnly.FromDateTime(DateTime.Now.AddDays(7)),
-            Customer = (_context.Customers.Single(c => c.CustomerID == newOrderRequest.CustomerId) ?? null)!, 
+            Customer = await _context.Customers.SingleAsync(c => c.CustomerID == newOrderRequest.CustomerId), 
             Payments = new List<PaymentDetail>(),
         };
         
         _context.Orders.Add(newOrder); 
         foreach (OrderItemRequest orderItemRequest in newOrderRequest.OrderItemRequests)
         {
-            Item currentItem = _context.Items.Single(i => i.ItemId == orderItemRequest.itemId);
+            var currentItem = await _context.Items.SingleAsync(i => i.ItemId == orderItemRequest.itemId);
             if (currentItem.ItemStock < orderItemRequest.quantity)
                 throw new Exception("Not enough items in stock");
             currentItem.ItemStock -= orderItemRequest.quantity;
@@ -170,7 +170,7 @@ public class OrderService : IOrderService
             };
             _context.OrderItems.Add(newOrderItem);
         }
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
         return newOrder;
     }
 
@@ -190,7 +190,7 @@ public class OrderService : IOrderService
         }
 
         if (orderItemToRemove == null) throw new Exception("Item not in order");
-        Item itemToRemove = _context.Items.First(i => i.ItemId == idOfItemToRemove);
+        Item itemToRemove = await _context.Items.FirstAsync(i => i.ItemId == idOfItemToRemove);
         itemToRemove.ItemStock += orderItemToRemove.Quantity;
         _context.OrderItems.Remove(orderItemToRemove);
         await _context.SaveChangesAsync();

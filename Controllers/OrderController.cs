@@ -2,7 +2,7 @@ using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using WebApplication2.Request;
 using WebApplication2.Response;
-using WebApplication2.Services.Interface;
+using WebApplication2.Services;
 namespace WebApplication2.Controllers;
 
 [ApiController]
@@ -89,10 +89,14 @@ public class OrderController: Controller
     public async Task<IActionResult> CreateOrder([FromQuery] OrderRequest orderRequest)
     {
         if (!_validator.CheckCustomerIdInDatabase(orderRequest.CustomerId))
-            return NotFound($"Customer with id '{orderRequest.CustomerId}' not in database"); 
+            return NotFound($"Customer with id '{orderRequest.CustomerId}' not in database");
+        if (!_validator.CheckValidDeliveryMethod(orderRequest.DeliveryMethod))
+            return BadRequest($"Invalid delivery method");
+        if (orderRequest.OrderItemRequests.Count == 0)
+            throw new ArgumentException("Order can't be empty");
         try
         {
-            var newOrder = await Task.FromResult(_orderService.CreateOrder(orderRequest));
+            var newOrder = await _orderService.CreateOrder(orderRequest);
             return CreatedAtAction(nameof(GetOrderById), new { id = newOrder.OrderId }, newOrder);
         }
         catch (Exception e)
@@ -112,7 +116,7 @@ public class OrderController: Controller
             return NotFound($"Order '{orderId}' not in database");
         try
         {
-            var orderItemToRemove = await Task.FromResult(_orderService.RemoveItemFromOrder(itemIdToRemove, orderId));
+            var orderItemToRemove = await _orderService.RemoveItemFromOrder(itemIdToRemove, orderId);
             return Ok(orderItemToRemove);
         }
         catch (Exception e)
@@ -121,17 +125,5 @@ public class OrderController: Controller
             return StatusCode(StatusCodes.Status500InternalServerError, "An error occured");
         }
     }
-
-    // [HttpDelete("{orderId}")]
-    // [ProducesResponseType(StatusCodes.Status200OK)]
-    // public async Task<IActionResult> RemoveOrder(Guid orderId)
-    // {
-    //     if (!_validator.CheckOrderInDatabase(orderId))
-    //         return NotFound($"Order '{orderId}' not in database");
-    //     try
-    //     {
-    //         var orderToRemove = await Task.FromResult(_orderService);
-    //     }
-    // }
 }
 
