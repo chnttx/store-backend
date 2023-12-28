@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using WebApplication2.Models;
+using WebApplication2.Services;
 using WebApplication2.Services.Interface;
 
 namespace WebApplication2.Controllers;
@@ -41,7 +42,7 @@ public class CustomerController : Controller
     public IActionResult GetCustomerById( Guid queryCustomerId)
     {
         if (!_validator.CheckCustomerIdInDatabase(queryCustomerId))
-            throw new Exception($"Customer with ID {queryCustomerId} doesn't exist");
+            return NotFound($"Customer with ID '{queryCustomerId}' doesn't exist");
         try
         {
             var customerQueryResult = _customerService.GetCustomerById(queryCustomerId);

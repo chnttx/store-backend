@@ -2,9 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using WebApplication2.Data;
 using WebApplication2.Models;
 using WebApplication2.Request;
-using WebApplication2.Services.Interface;
 
-namespace WebApplication2.Services;
+namespace WebApplication2.Services.Implementation;
 
 public class CustomerService : ICustomerService
 {
@@ -33,8 +32,10 @@ public class CustomerService : ICustomerService
 
     public async Task UpdateVipCustomers()
     {
+        Console.WriteLine("Finding and updating VIP customers");
         var vipCustomers = await ( 
             from o in _context.Orders
+            
             join oi in _context.OrderItems on o.OrderId equals oi.OrderId
             group oi by o.CustomerId into g
             where g.Select(oi => oi.ItemId).Distinct().Count() > 10 || 

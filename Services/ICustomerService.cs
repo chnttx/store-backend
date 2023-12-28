@@ -1,7 +1,7 @@
 using WebApplication2.Models;
 using WebApplication2.Request;
 
-namespace WebApplication2.Services.Interface;
+namespace WebApplication2.Services;
 
 public interface ICustomerService
 {
