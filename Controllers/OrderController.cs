@@ -1,5 +1,6 @@
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using WebApplication2.Request;
 using WebApplication2.Response;
 using WebApplication2.Services;
@@ -26,12 +27,16 @@ public class OrderController: Controller
     [ProducesResponseType<List<OrderResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> GetAllOrders([FromHeader] string secret_key)
+    public async Task<IActionResult> GetAllOrders([FromHeader] string secret_key, [FromQuery] PaginationFilter filter)
     {
         try
         {
             var allOrderResponses = await _orderService.GetAllOrders();
-            return Ok(allOrderResponses);
+            var pagedData = allOrderResponses
+                .Skip((filter.PageNumber - 1) * filter.PageSize)
+                .Take(filter.PageSize)
+                .ToList();
+            return Ok(new PagedResponse<List<OrderResponse>>(pagedData, filter.PageNumber, filter.PageSize));
         }
         catch (Exception e)
         {
@@ -45,7 +50,8 @@ public class OrderController: Controller
     [ProducesResponseType<OrderResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<IActionResult> GetOrderById([FromHeader] Guid queryOrderId)
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetOrderById([FromHeader] string secret_key, Guid queryOrderId)
     {
         if (!_validator.CheckOrderInDatabase(queryOrderId))
             return NotFound($"Order with '{queryOrderId}' not in database");
@@ -65,15 +71,21 @@ public class OrderController: Controller
     [SecretKey]
     [ProducesResponseType<List<OrderResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> GetOrdersByKeyword([FromHeader] string secret_key, string queryKeyword)
+    public async Task<IActionResult> GetOrdersByKeyword([FromHeader] string secret_key, string queryKeyword, 
+        [FromQuery] PaginationFilter filter)
     {
         if (!_validator.CheckKeywordInItemName(queryKeyword))
             return NotFound($"No item name containing '{queryKeyword}'");
         try
         {
             var orderKeywordResult = await _orderService.GetOrderByKeyword(queryKeyword);
-            return Ok(orderKeywordResult);
+            var pagedData = orderKeywordResult
+                .Skip((filter.PageNumber - 1) * filter.PageSize)
+                .Take(filter.PageSize)
+                .ToList();
+            return Ok(new PagedResponse<List<OrderResponse>>(pagedData, filter.PageNumber, filter.PageSize));
         }
         catch (Exception e)
         {
@@ -108,6 +120,7 @@ public class OrderController: Controller
 
     [HttpDelete("{orderId}/{itemIdToRemove}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> RemoveItemFromOrder(Guid itemIdToRemove, Guid orderId)
     {
         if (!_validator.CheckItemIdInDatabase(itemIdToRemove))

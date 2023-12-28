@@ -36,8 +36,10 @@ public class DataValidator : IDataValidator
 
     public bool CheckValidDeliveryMethod(string deliveryMethod)
     {
-        deliveryMethod = deliveryMethod.Trim().ToLower();
-        return Array.Exists(ALL_DELIVERY_METHODS, w => w == deliveryMethod);
+        string cmpDeliveryMethod = deliveryMethod.Trim();
+        return cmpDeliveryMethod != "" || Array.Exists(ALL_DELIVERY_METHODS, w => w.Equals(cmpDeliveryMethod, StringComparison.CurrentCultureIgnoreCase));
     }
+
+
     
 }

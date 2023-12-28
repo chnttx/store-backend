@@ -39,7 +39,7 @@ public class CustomerService : ICustomerService
             join oi in _context.OrderItems on o.OrderId equals oi.OrderId
             group oi by o.CustomerId into g
             where g.Select(oi => oi.ItemId).Distinct().Count() > 10 || 
-                  g.Sum(oi => oi.ItemPrice * oi.Quantity) > 1e6
+                  g.Sum(oi => oi.ItemPrice * oi.Quantity) > 1e9
             select g.Key).ToListAsync();
 
         foreach (var customer in vipCustomers.Select(customerId => _context.Customers.Find(customerId)).OfType<Customer>())

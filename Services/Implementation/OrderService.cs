@@ -3,7 +3,6 @@ using WebApplication2.Data;
 using WebApplication2.Models;
 using WebApplication2.Request;
 using WebApplication2.Response;
-using WebApplication2.Services.Interface;
 
 namespace WebApplication2.Services.Implementation;
 
@@ -107,7 +106,6 @@ public class OrderService : IOrderService
             .ToListAsync();
 
         
-        if (orderQuery.Count == 0) return null!;
         
         // else 
         List<string> allShopsInOrder = new List<string>();
@@ -208,45 +206,52 @@ public class OrderService : IOrderService
             from o in _context.Orders
             join oi in _context.OrderItems on o.OrderId equals oi.OrderId
             join i in _context.Items on oi.ItemId equals i.ItemId
-            where i.ItemName.ToLower().Contains(queryKeyword)
-            select new { Order = o, OrderItem = oi, Item = i }).ToListAsync();
-
-        var groupedOrders = orderQueryByKeyword.GroupBy(x => x.Order.OrderId);
+            where i.ItemName.ToLower().Contains(queryKeyword.ToLower())
+            select new
+            {
+                orderId = o.OrderId,
+                dueDate = o.DueDate,
+                deliveryStatus = o.DeliveryStatus
+                
+            })
+            .DistinctBy(ooi => ooi.orderId)
+            .ToListAsync();
 
         List<OrderResponse> resultOrderQueryByKeyword = new List<OrderResponse>();
-        foreach (var group in groupedOrders)
+        foreach (var orderDetail in orderQueryByKeyword)
         {
-            float totalCost = 0;
+            List<OrderItemResponse> allItemsInOrder = new List<OrderItemResponse>();
             List<string> allShops = new List<string>();
-            List<OrderItemResponse> allItemsInResponse = new List<OrderItemResponse>();
-
-            foreach (var order in group)
+            var orderItems = await _context.OrderItems
+                .Where(oi => oi.OrderId == orderDetail.orderId).Include(orderItem => orderItem.Item)
+                .ThenInclude(item => item.Shop).ToListAsync();
+            int itemCount = 0;
+            float totalOrderPrice = 0;
+            foreach (var orderItem in orderItems)
             {
-                totalCost += order.OrderItem.Quantity * order.OrderItem.ItemPrice;
-                OrderItemResponse orderItemResponse = new OrderItemResponse()
+                OrderItemResponse newOrderItemResponse = new OrderItemResponse()
                 {
-                    itemName = order.Item.ItemName,
-                    itemQuantity = order.OrderItem.Quantity,
-                    itemPrice = order.OrderItem.ItemPrice,
-                    totalPrice = order.OrderItem.ItemPrice * order.OrderItem.Quantity,
+                    itemName = orderItem.Item.ItemName,
+                    itemPrice = orderItem.ItemPrice,
+                    itemQuantity = orderItem.Quantity,
+                    totalPrice = orderItem.ItemPrice * orderItem.Quantity
                 };
-                allItemsInResponse.Add(orderItemResponse);
-                allShops.Add(order.Item.Shop.ShopName);
+                allItemsInOrder.Add(newOrderItemResponse);
+                allShops.Add(orderItem.Item.Shop.ShopName);
             }
 
-            OrderResponse resultOrderResponse = new OrderResponse()
+            OrderResponse newOrderResponse = new OrderResponse()
             {
-                OrderId = group.Key,
-                TotalCost = totalCost,
-                ItemCount = group.Count(),
-                DueDate = group.First().Order.DueDate,
-                DeliveryStatus = group.First().Order.DeliveryStatus,
+                OrderId = orderDetail.orderId,
+                TotalCost = totalOrderPrice,
+                ItemCount = itemCount,
+                DueDate = orderDetail.dueDate,
+                DeliveryStatus = orderDetail.deliveryStatus,
+                allItems = allItemsInOrder,
                 allShops = allShops,
-                allItems = allItemsInResponse
-            };
-
-            resultOrderQueryByKeyword.Add(resultOrderResponse);
+            }; resultOrderQueryByKeyword.Add(newOrderResponse);
         }
+
         return resultOrderQueryByKeyword;
     }
     

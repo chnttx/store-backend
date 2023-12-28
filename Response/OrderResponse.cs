@@ -10,5 +10,5 @@ public class OrderResponse
     public DateOnly DueDate { get; set; }
     public string DeliveryStatus { get; set; }
     public List<string> allShops { get; set; }
-    public List<string> allItems { get; set; }
+    public List<OrderItemResponse> allItems { get; set; }
 }
