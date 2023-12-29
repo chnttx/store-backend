@@ -163,8 +163,9 @@ public class OrderService : IOrderService
             {
                 OrderId = newOrder.OrderId,
                 ItemId = currentItem.ItemId,
-                ItemPrice = currentItem.ItemPrice,
-                Quantity = orderItemRequest.quantity
+                ItemPrice = currentItem.PriceItem,
+                Quantity = orderItemRequest.quantity,
+                // TotalCost = currentItem.PriceItem * orderItemRequest.quantity
             };
             _context.OrderItems.Add(newOrderItem);
         }
@@ -214,9 +215,12 @@ public class OrderService : IOrderService
                 deliveryStatus = o.DeliveryStatus
                 
             })
-            .DistinctBy(ooi => ooi.orderId)
+            // .DistinctBy(ooi => ooi.orderId)
+            .GroupBy(ooi => ooi.orderId)
+            .Select(g => g.First())
             .ToListAsync();
-
+        
+        
         List<OrderResponse> resultOrderQueryByKeyword = new List<OrderResponse>();
         foreach (var orderDetail in orderQueryByKeyword)
         {
@@ -254,5 +258,9 @@ public class OrderService : IOrderService
 
         return resultOrderQueryByKeyword;
     }
-    
+
+    public Task<List<Order>> GetOrders()
+    {
+        return _context.Orders.Include(o => o.Customer).ToListAsync();
+    }
 }

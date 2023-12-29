@@ -17,7 +17,7 @@ public class Item
     public string ItemCategory { get; set; }
     
     [Required]
-    public float ItemPrice { get; set; }
+    public float PriceItem { get; set; }
     [Required]
     public int ItemStock { get; set; }
     public Shop Shop { get; set; } = null!;

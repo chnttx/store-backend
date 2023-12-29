@@ -12,4 +12,5 @@ public interface IOrderService
     Task<List<OrderResponse>> GetOrderByKeyword(string queryKeyword);
     Task<OrderItem> RemoveItemFromOrder(Guid idOfItemToRemove, Guid orderId);
     Task<OrderResponse> DeleteOrder(Guid orderId);
+    Task<List<Order>> GetOrders();
 }

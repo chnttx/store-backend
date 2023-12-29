@@ -14,8 +14,8 @@ public class OrderItem
     [Required]
     public int Quantity { get; set; }
     
-    [Required]
-    public float TotalPrice { get; set; } 
+    [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+    public float TotalCost { get; set; } 
 
     public Order Order { get; set; } = null!;
     public Item Item { get; set; } = null!;

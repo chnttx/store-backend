@@ -45,6 +45,13 @@ public class OrderController: Controller
         }
     }
 
+    [HttpGet("all")]
+    public async Task<IActionResult> getOrders()
+    {
+        var allOrders = await _orderService.GetOrders();
+        return Ok(allOrders);
+    }
+    
     [HttpGet("id/{queryOrderId}")]
     [SecretKey]
     [ProducesResponseType<OrderResponse>(StatusCodes.Status200OK)]
@@ -98,7 +105,7 @@ public class OrderController: Controller
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> CreateOrder([FromQuery] OrderRequest orderRequest)
+    public async Task<IActionResult> CreateOrder([FromBody] OrderRequest orderRequest)
     {
         if (!_validator.CheckCustomerIdInDatabase(orderRequest.CustomerId))
             return NotFound($"Customer with id '{orderRequest.CustomerId}' not in database");
